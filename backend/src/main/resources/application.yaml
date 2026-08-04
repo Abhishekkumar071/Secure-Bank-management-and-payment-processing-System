@@ -1,1 +1,8 @@
-# Reserved for future profile-specific structured configuration.
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: payments-platform
