@@ -54,6 +54,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Spring Boot 4: H2 console auto-config is a separate module -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-h2console</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
