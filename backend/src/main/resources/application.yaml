@@ -26,3 +26,10 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+
+jwt:
+  # Secret key must be long and secure (at least 32 chars)
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  # Expiration time in milliseconds (86400000 ms = 1 day)
+  expiration: 86400000
