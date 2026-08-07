@@ -10,9 +10,23 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+
+// Testing Secured Endpoint
+import org.springframework.security.core.Authentication;
+// (Add this import at the top)
+
+
+
 @RestController
 @RequestMapping("/api")
 public class HealthController {
+
+    @GetMapping("/secured/merchant")
+    public ResponseEntity<ApiResponse<String>> testSecuredEndpoint(Authentication authentication) {
+        String userEmail = authentication.getName();
+        String message = "Hello " + userEmail + "! You have successfully accessed a secure MERCHANT-only API.";
+        return ResponseEntity.ok(new ApiResponse<>(true, message, null));
+    }
 
     @GetMapping("/health")
     public ResponseEntity<ApiResponse<Map<String, String>>> healthCheck() {
