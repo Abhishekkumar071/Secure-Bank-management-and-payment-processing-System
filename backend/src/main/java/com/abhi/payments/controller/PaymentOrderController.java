@@ -1,0 +1,33 @@
+package com.abhi.payments.controller;
+
+import com.abhi.payments.dto.ApiResponse;
+import com.abhi.payments.dto.PaymentOrderRequest;
+import com.abhi.payments.dto.PaymentOrderResponse;
+import com.abhi.payments.service.PaymentOrderService;
+import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/orders")
+public class PaymentOrderController {
+
+    private final PaymentOrderService paymentOrderService;
+
+    public PaymentOrderController(PaymentOrderService paymentOrderService) {
+        this.paymentOrderService = paymentOrderService;
+    }
+
+    // Creates a new payment order - Protected Route
+    @PostMapping
+    public ResponseEntity<ApiResponse<PaymentOrderResponse>> createOrder(
+            @Valid @RequestBody PaymentOrderRequest request,
+            Authentication authentication) {
+
+        String userEmail = authentication.getName();
+        PaymentOrderResponse response = paymentOrderService.createOrder(userEmail, request);
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "Order created successfully", response));
+    }
+}
