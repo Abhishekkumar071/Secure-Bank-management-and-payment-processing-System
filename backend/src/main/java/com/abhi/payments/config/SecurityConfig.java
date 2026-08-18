@@ -1,5 +1,6 @@
 package com.abhi.payments.config;
 
+import com.abhi.payments.security.ApiKeyFilter;
 import com.abhi.payments.security.CustomUserDetailsService;
 import com.abhi.payments.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
@@ -21,10 +22,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final ApiKeyFilter apiKeyFilter; // New Filter Injected
     private final CustomUserDetailsService userDetailsService;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, CustomUserDetailsService userDetailsService) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter,
+                          ApiKeyFilter apiKeyFilter,
+                          CustomUserDetailsService userDetailsService) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.apiKeyFilter = apiKeyFilter;
         this.userDetailsService = userDetailsService;
     }
 
@@ -35,8 +40,6 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        // Spring Security 7: UserDetailsService must be passed to the constructor
-        // (setUserDetailsService was removed)
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
@@ -56,14 +59,16 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
-                        // Example of Role-Based Access:
-                        .requestMatchers("/api/secured/merchant").hasRole("MERCHANT")
+                        // Allow our external endpoints (Authentication is handled by ApiKeyFilter)
+                        .requestMatchers("/api/external/**").authenticated()
 
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                // First check for API Keys, then check for JWT
+                .addFilterBefore(apiKeyFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtAuthFilter, ApiKeyFilter.class)
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
         return http.build();
