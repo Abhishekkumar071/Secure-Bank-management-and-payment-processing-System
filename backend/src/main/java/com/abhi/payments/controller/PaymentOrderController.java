@@ -19,15 +19,16 @@ public class PaymentOrderController {
         this.paymentOrderService = paymentOrderService;
     }
 
-    // Creates a new payment order - Protected Route
     @PostMapping
     public ResponseEntity<ApiResponse<PaymentOrderResponse>> createOrder(
             @Valid @RequestBody PaymentOrderRequest request,
+            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey, // Header mapping
             Authentication authentication) {
 
         String userEmail = authentication.getName();
-        PaymentOrderResponse response = paymentOrderService.createOrder(userEmail, request);
+        // Passing the key to the service layer
+        PaymentOrderResponse response = paymentOrderService.createOrder(userEmail, request, idempotencyKey);
 
-        return ResponseEntity.ok(new ApiResponse<>(true, "Order created successfully", response));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Order processed successfully", response));
     }
 }
