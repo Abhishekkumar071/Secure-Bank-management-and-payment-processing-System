@@ -54,6 +54,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
+		<!-- Explicitly adding Jackson for ObjectMapper (Fixes red line issue) -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
 		<!-- Spring Boot 4: H2 console auto-config is a separate module -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
