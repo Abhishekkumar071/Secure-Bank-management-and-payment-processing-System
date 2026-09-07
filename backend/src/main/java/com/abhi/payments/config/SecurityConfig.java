@@ -53,6 +53,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/health", "/api/test-error").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+
+                        .requestMatchers("/api/webhooks/**").permitAll()
                         .requestMatchers("/api/external/**").authenticated()
                         .anyRequest().authenticated()
                 )
